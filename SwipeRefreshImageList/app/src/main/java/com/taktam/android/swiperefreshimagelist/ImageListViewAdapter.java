@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.taktam.android.swiperefreshimagelist.model.Image;
 
@@ -23,6 +26,7 @@ public class ImageListViewAdapter extends ArrayAdapter<Image> {
 
     private class ViewHolder {
         ImageView imageView;
+        ProgressBar progressBar;
     }
 
     public void replaceAll(List<Image> items) {
@@ -41,12 +45,25 @@ public class ImageListViewAdapter extends ArrayAdapter<Image> {
             convertView = mInflater.inflate(R.layout.list_item, null);
             holder = new ViewHolder();
             holder.imageView = (ImageView) convertView.findViewById(R.id.image);
+            holder.progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Picasso.with(context).load(rowItem.url).into(holder.imageView);
+        final ProgressBar progressBar = holder.progressBar;
+
+        Picasso.with(context).load(rowItem.url).into(holder.imageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError() {
+                //error
+            }
+        });
 
         return convertView;
     }
